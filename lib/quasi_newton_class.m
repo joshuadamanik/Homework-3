@@ -12,9 +12,7 @@ classdef quasi_newton_class < handle
         
         function p = rankone(obj, X, eps, f)
             g = grad_central_diff(X, eps, f);
-            if isempty(obj.X_last)
-                p = -g;
-            else
+            if ~isempty(obj.X_last)
                 del_x = X - obj.X_last;
                 del_g = g - obj.g_last;
                 
@@ -22,18 +20,16 @@ classdef quasi_newton_class < handle
                 den = del_g'*(del_x-obj.H*del_g);
                 
                 obj.H = obj.H + (num * num'./ den);
-                p = -obj.H*g;
             end
             
+            p = -obj.H*g;
             obj.X_last = X;
             obj.g_last = g;
         end
         
         function p = dfp(obj, X, eps, f)
             g = grad_central_diff(X, eps, f);
-            if isempty(obj.X_last)
-                p = -g;
-            else
+            if ~isempty(obj.X_last)
                 del_x = X - obj.X_last;
                 del_g = g - obj.g_last;
                 
@@ -44,26 +40,24 @@ classdef quasi_newton_class < handle
                 den2 = del_g'*obj.H*del_g;
                 
                 obj.H = obj.H + num1/den1 - num2*num2'/den2;
-                p = -obj.H*g;
             end
             
+            p = -obj.H*g;
             obj.X_last = X;
             obj.g_last = g;
         end
         
         function p = bgfs(obj, X, eps, f)
             g = grad_central_diff(X, eps, f);
-            if isempty(obj.X_last)
-                p = -g;
-            else
+            if ~isempty(obj.X_last)
                 del_x = X - obj.X_last;
                 del_g = g - obj.g_last;
                 
                 obj.H = obj.H + (1 + (del_g'*obj.H*del_g)/(del_g'*del_x))*(del_x*del_x')/(del_x'*del_g)...
                               - (obj.H*del_g*del_x' + (obj.H*del_g*del_x')')/(del_g'*del_x);
-                p = -obj.H*g;
             end
             
+            p = -obj.H*g;
             obj.X_last = X;
             obj.g_last = g;
         end
